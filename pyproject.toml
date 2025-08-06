@@ -1,0 +1,16 @@
+[project]
+name = "aideatoprod"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "crewai>=0.152.0",
+    "crewai-tools[mcp]>=0.59.0",
+    "fastmcp>=2.11.1",
+    "google-api-python-client>=2.177.0",
+    "google-auth-httplib2>=0.2.0",
+    "google-auth-oauthlib>=1.2.2",
+    "mcp[cli]>=1.12.3",
+    "python-dotenv>=1.1.1",
+]
