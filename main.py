@@ -12,6 +12,20 @@ def main():
             args=[r"mcps\g_drive_mcp\server.py"],
             env={"UV_PYTHON": "3.13", **os.environ},
             cwd=r"c:\Users\USER\Desktop\AIdeaToProd"
+        ),
+        StdioServerParameters(
+            command="npx",
+            args=[
+                "@timbreeding/jira-mcp-server@latest",
+                "--jira-base-url=https://rabinovitztami.atlassian.net",
+                "--jira-username=rabinovitztami@gmail.com",
+                "--jira-api-token=ATATT3xFfGF0K8PtcsfxM3IiOc_IKFKMOPxcpFb6eag4OyoVSdZi0hfsczwjsBEgfb1HMuKIQXLau4qEdZ1agZIgq1qGIDUv9-uVN1vkRRfGxTDOhPOaelu_fSF1VqBs73XL91eCYxWSMr41enH0yt2xt9_PjMRbYcNQpsh0MNfSjBgGI8C8D-c=F0C31AE9"
+            ],
+            env={
+                "DEBUG": "true",
+                "LOG_FILE_PATH": "",
+                **os.environ
+            }
         )
     ]
 
