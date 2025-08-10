@@ -16,9 +16,9 @@ class CrewInitializer:
 
         HL_designer_agent = AgentsFactory.get_hl_design_agent(tools)
         HL_design_task = TasksFactory.get_hl_design_task(HL_designer_agent, idea, app_name)
-        
+
         detailed_design_agent = AgentsFactory.get_detailed_design_agent(tools)
-        detailed_design_task = TasksFactory.get_detailed_design_task(detailed_design_agent, app_name)
+        detailed_design_task = TasksFactory.get_detailed_design_task( detailed_design_agent, app_name)
 
         # Create a Crew instance with the designer agent and task
         crew = Crew(
