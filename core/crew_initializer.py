@@ -11,19 +11,19 @@ class CrewInitializer:
     def initialize_crew(self, tools):
         """Initialize and configure the crew"""
 
-        idea = "an application that helps users track their daily water intake and set hydration goals."
-        app_name = "HydroTrack"
+        idea = "an application that the user enter a city, and it provides 10 jokes about that city"
+        app_name = "CityJokes"
 
-        HL_designer_agent = AgentsFactory.get_hl_design_agent(tools)
-        HL_design_task = TasksFactory.get_hl_design_task(HL_designer_agent, idea, app_name)
+        HLD_agent = AgentsFactory.get_HLD_agent(tools)
+        HLD_task = TasksFactory.get_HLD_task(HLD_agent, idea, app_name)
 
-        detailed_design_agent = AgentsFactory.get_detailed_design_agent(tools)
-        detailed_design_task = TasksFactory.get_detailed_design_task( detailed_design_agent, app_name)
+        DD_agent = AgentsFactory.get_DD_agent(tools)
+        DD_task = TasksFactory.get_DD_task(DD_agent, app_name)
 
         # Create a Crew instance with the designer agent and task
         crew = Crew(
-            agents=[HL_designer_agent, detailed_design_agent],
-            tasks=[HL_design_task, detailed_design_task],
+            agents=[HLD_agent, DD_agent],
+            tasks=[HLD_task, DD_task],
             process=Process.sequential,  # or Process.parallel based on your needs
             verbose=True
         )
