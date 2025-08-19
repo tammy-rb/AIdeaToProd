@@ -1,8 +1,8 @@
 from crewai import Agent, Task
 
 class TasksFactory:
+
     @staticmethod
-    
     def get_HLD_task(agent, idea: str, app_name: str):
         return Task(
             agent=agent,
@@ -37,54 +37,171 @@ class TasksFactory:
     If any step fails, output STRICT JSON:
     {{"error":"<explanation>","partial":{{"folder_id":"?","hl_doc_id":"?"}}}}
     """,
-            expected_output="STRICT JSON with folder_id, folder_name, hl_doc_id, hl_doc_name (or error JSON)."
+    expected_output="STRICT JSON with folder_id, folder_name, hl_doc_id, hl_doc_name (or error JSON)."
         )
+    
 
     @staticmethod
-    def get_DD_task(agent, app_name: str):
+    def get_DD_only_task(agent, app_name: str):
         return Task(
             agent=agent,
             description=f"""
-    You will read the HLD, produce a Detailed Design in the SAME folder, and create Jira EPICs/STORIES.
+    Read the HLD and produce a Detailed Design (DD) in the SAME Google Drive folder. Return STRICT JSON ONLY.
 
     INPUTS:
     - app_name: "{app_name}"
     - Use the previous task's JSON to get: folder_id, hl_doc_id.
 
-    GOOGLE DRIVE:
+    GOOGLE DRIVE (DO EXACTLY):
     1) Read the HLD content from hl_doc_id.
-    2) Create a file named "{app_name}_Detailed_Design.md" in folder_id.
-    3) Write a DD using the template sections:
-    - APP_META, Architecture & Environments, Data Model (Detailed),
-        APIs/Contracts (Detailed), Workflows & Sequences,
-        Security & Privacy Controls, Observability, Testing Strategy,
-        Delivery Plan, Backlog Export (for Jira).
-    - Ensure every EPIC/STORY is Jira-expressible with AC and points.
-
-    JIRA (existing project required):
-    4) Find a Jira project named exactly "{app_name}". 
-    - If multiple match, pick the one with most recent activity.
-    - If none found, STOP and return error JSON (do NOT create project).
-    5) Create EPICs per Backlog Export.
-    6) Under each EPIC, create STORIES with:
-    - Summary, Description (short), Acceptance Criteria (GIVEN/WHEN/THEN),
-        Story Points (1/2/3/5/8/13), Labels (use slugified app_name and component).
-    - Link STORIES to the parent EPIC.
-    7) Optionally create TASKS/SUBTASKS if the DD called for them.
-    8) Validate by running JQL "project = <KEY> ORDER BY created ASC" and collect created keys.
+    2) Create a file named "{app_name}_Detailed_Design.md" inside folder_id.
+    3) Write a DD using these sections:
+       - APP_META, Architecture & Environments, Data Model (Detailed),
+         APIs/Contracts (Detailed), Workflows & Sequences,
+         Security & Privacy Controls, Observability, Testing Strategy,
+         Delivery Plan, Backlog Export (structure only, no Jira ops).
+       - Be clear, unambiguous, implementation-agnostic. Keep it concise.
+    4) Save the file and verify it is non-empty.
 
     OUTPUT (STRICT JSON ONLY):
     {{
-    "detailed_doc_id": "<google_drive_file_id>",
-    "detailed_doc_name": "{app_name}_Detailed_Design.md",
-    "jira_project_key": "<KEY>",
-    "epic_keys": ["<KEY-1>", "..."],
-    "story_keys": ["<KEY-2>", "..."]
+      "detailed_doc_id": "<google_drive_file_id>",
+      "detailed_doc_name": "{app_name}_Detailed_Design.md",
+      "detailed_doc_content": "<VERBATIM_CONTENT_OF_DD_FILE>"
     }}
 
     If any step fails, output STRICT JSON:
-    {{"error":"<explanation>","partial":{{"detailed_doc_id":"?","jira_project_key":"?","created_keys":[]}}}}
+    {{"error":"<explanation>","partial":{{"detailed_doc_id":"?"}}}}
     """,
-            expected_output=("STRICT JSON with detailed_doc_id, detailed_doc_name, jira_project_key, epic_keys, story_keys "
-                            "or error JSON with partial info.")
+            expected_output="STRICT JSON with detailed_doc_id, detailed_doc_name, detailed_doc_content (or error JSON).",
+        )
+
+    @staticmethod
+    def get_CodeStructure_task(agent, app_name: str):
+        return Task(
+            agent=agent,
+            description=f"""
+    From the Detailed Design content, derive a simple, complete repository structure. Do NOT write code. Return STRICT JSON ONLY.
+
+    INPUTS:
+    - app_name: "{app_name}"
+    - Use the previous task's JSON to get: detailed_doc_content (the full DD text).
+
+    THINKING AND OUTPUT RULES:
+    - Prefer the simplest structure that fully supports the DD.
+    - Include all essential files (README, config, main entrypoint, modules, simple layers).
+    - For each file, provide a clear "purpose" description (no code).
+    - Avoid over-engineering (keep folders shallow unless justified).
+    - Do not invent dependencies that are not implied by the DD.
+    - No prose outside JSON. STRICT JSON only.
+
+    OUTPUT (STRICT JSON ONLY):
+    {{
+      "root": "{app_name}",
+      "tree": "<ASCII_TREE_OF_DIRECTORIES_AND_FILES>",
+      "files": [
+        {{ "path": "README.md", "purpose": "<what this file explains/contains>" }},
+        {{ "path": "src/main.py", "purpose": "<entrypoint responsibilities>" }}
+        // add all files needed by the DD with simple structure
+      ],
+      "assumptions": [
+        "<concise assumption if you had to choose a language/framework/etc>"
+      ]
+    }}
+
+    If any step fails, output STRICT JSON:
+    {{"error":"<explanation>","partial":{{"root":"{app_name}","files":[]}}}}
+    """,
+            expected_output="STRICT JSON with root, tree, files[], assumptions[] (or error JSON).",
+        )
+
+    @staticmethod
+    def get_Planning_Jira_task(agent, jira_project_key: str):
+        return Task(
+            agent=agent,
+            description=f"""
+    From a code structure JSON, produce an ordered implementation plan and create Jira Epics/Stories. Return STRICT JSON ONLY.
+
+    INPUTS:
+    - Use the previous task's JSON to get: code structure (root, tree, files[], assumptions[]).
+    - Jira project key to use : "{jira_project_key}"
+
+    PLANNING (OUTPUT AS LIST ITEMS, NO CODE):
+    - Create a concise, numbered implementation_plan of concrete developer actions, e.g.:
+      1. Create repo and root scaffolding.
+      2. Add file src/main.py with CLI/HTTP entrypoint signature and argument parsing.
+      3. Add module src/jokes/client.py that fetches jokes (no implementation).
+      4. Wire simple configuration handling, logging, and basic error handling.
+      ...
+  - Keep steps short, specific, and in executable order. Do not include code.
+  - Do NOT include any testing work (no unit/integration/e2e tests, no test scaffolding or test issues). Another agent will handle all tests.
+  - If the code structure includes test files or testing sections, ignore them for planning and Jira creation.
+
+  DOMAIN GUARDRAILS:
+  - Keep the plan anchored to the jokes-by-city domain regardless of the app name.
+  - Use neutral naming like "jokes API", "city model", "joke model", and avoid branding or app-name-specific terms.
+
+   JIRA SITE & PROJECT (use Atlassian tools precisely; DO NOT use Google Drive IDs):
+   1) Resolve the Jira site (cloud) first:
+     - Call getAccessibleAtlassianResources and pick the Jira resource (type "jira" or websiteUrl ending with ".atlassian.net").
+     - Capture: cloudId and websiteUrl/baseUrl for that site.
+   2) List visible projects for that site:
+     - Call getVisibleJiraProjects with the resolved site (pass websiteUrl/domain or cloudId exactly as the tool expects).
+     - Validate that project key "{jira_project_key}" exists (case-insensitive compare).
+     - If not found, STOP and return error JSON.
+  3) Create EPICs that group the implementation_plan logically (exclude any testing scope).
+  4) Under each EPIC, create STORIES with (exclude test-related stories):
+       - Summary, short Description, Acceptance Criteria (GIVEN/WHEN/THEN),
+         Story Points (1/2/3/5/8/13), Labels (use slugified root dir and component).
+       - Link STORIES to parent EPIC.
+  5) Validate by running JQL "project = {jira_project_key} ORDER BY created ASC" and collect created issue keys.
+
+    OUTPUT (STRICT JSON ONLY):
+    {{
+      "code_structure": {{"root":"<as_input>","tree":"<as_input>","files":[{{...}}],"assumptions":[...] }},
+      "implementation_plan": ["1. ...","2. ...","..."],
+      "epic_keys": ["<KEY-1>", "..."],
+      "story_keys": ["<KEY-2>", "..."]
+    }}
+
+    If any step fails, output STRICT JSON:
+    {{"error":"<explanation>","partial":{{"implementation_plan":[],"created_keys":[]}}}}
+    """,
+            expected_output=(
+                "STRICT JSON with code_structure echo, implementation_plan, epic_keys, story_keys "
+                "or error JSON with partial info."
+            ),
+        )
+
+    @staticmethod
+    def get_Implementation_GitHub_task(agent, app_name: str, jira_project_key: str):
+        return Task(
+            agent=agent,
+            description=f"""
+Create a GitHub repository for the app using the provided code structure and the Jira issues in "{jira_project_key}".
+
+Do:
+- Create a repo named "{app_name}". If it already exists, use "{app_name} - {{timestamp}}".
+- Create folders/files exactly as in the given structure. Do not add tests or extra files.
+- Implement minimal, correct, runnable code aligned with the structure and Jira scope. No placeholders.
+- Commit and push to the default branch (main). Use small, logical commits as needed.
+
+Output (STRICT JSON only):
+{{
+  "repo_name": "<name>",
+  "repo_url": "<url>",
+  "default_branch": "main",
+  "created_branches": ["..."],
+  "created_files": ["..."],
+  "pull_requests": ["..."],
+  "commit_map": {{}}
+}}
+
+On failure, return STRICT JSON:
+{{"error":"<explanation>","partial":{{"repo_name":"?","created_files":[]}}}}
+""",
+            expected_output=(
+                "STRICT JSON with repo_name, repo_url, default_branch, created_branches, created_files, "
+                "pull_requests, commit_map or error JSON with partial info."
+            ),
         )

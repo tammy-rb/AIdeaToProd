@@ -21,31 +21,75 @@ class AgentsFactory:
             ),
             tools=google_drive_tools,
             verbose=True,
-            allow_delegation=False,
-            constraints=[
-                "Always return STRICT JSON exactly as specified.",
-                "Never create duplicate folders/files: if name exists, suffix with ' - {timestamp}'.",
-                "Documents must be non-empty and follow the given template."
-            ]
+            allow_delegation=False
         )
 
     @staticmethod
-    def get_DD_agent(gdrive_and_jira_tools):
+    def get_DD_agent(gdrive_tools):
+        """Agent 2: Creates Detailed Design (DD) from High-Level Design (HLD)."""
         return Agent(
-            role="Detailed Design Specialist & Project Planner",
-            goal=("Read the HLD, author a precise DD in the same Drive folder, then populate Jira "
-                "with EPICs and STORIES and return created keys."),
+            role="Detailed Design Specialist",
+            goal=("Read the HLD, author a precise Detailed Design in the same Drive folder."),
             backstory=(
-                "A senior technical lead. You translate HLDs into detailed specs and a pragmatic Jira plan. "
+                "A senior technical lead. You translate HLDs into detailed design documents. "
                 "You use strict JSON outputs and verify every created artifact."
             ),
-            tools=gdrive_and_jira_tools,
+            tools=gdrive_tools,
             verbose=True,
-            allow_delegation=False,
-            constraints=[
-                "Do NOT create Jira projects; find the one named exactly as the app_name.",
-                "If not found, fail with a helpful error JSON.",
-                "Every STORY must include Acceptance Criteria (GIVEN/WHEN/THEN).",
-                "Return STRICT JSON exactly as specified."
-            ]
+            allow_delegation=False
         )
+    
+    @staticmethod
+    def get_CodeStructure_agent(tools):
+        """Agent 3: Translates DD into a simple, pragmatic repo/file structure."""
+        return Agent(
+            role="Code Structure Architect",
+            goal=(
+                "Translate the Detailed Design into a simple, pragmatic repository/file structure with minimal complexity, "
+                "without writing code. For each file, define a clear purpose."
+            ),
+            backstory=(
+                "A pragmatic architect who prefers simple, effective structures. You never miss essential components, "
+                "avoid over-engineering, and output strict JSON only."
+            ),
+            tools=(tools or []),
+            verbose=True,
+            allow_delegation=False
+        )
+
+    @staticmethod
+    def get_Planning_agent(atlassian_tools):
+        """Agent 4: Plans delivery steps and creates Jira artifacts from the code structure."""
+        return Agent(
+            role="Delivery Planner & Jira Project Organizer",
+            goal=(
+                "From a code structure, produce a concise, ordered implementation plan and create corresponding Jira "
+                "Epics and Stories that a developer can follow."
+            ),
+            backstory=(
+                "An experienced delivery manager and technical PM who sequences work logically. "
+                "You create clean Jira backlogs aligned to a simple code structure."
+            ),
+            tools=atlassian_tools,
+            verbose=True,
+            allow_delegation=False
+        )
+
+    @staticmethod
+    def get_Implementation_agent(tools):
+        """Agent 5: Implements the repository and code in GitHub based on the plan and Jira keys."""
+        return Agent(
+            role="Repository Implementer & GitHub Builder",
+            goal=(
+                "Using the code structure and implementation plan, create a GitHub repository, scaffold all files, "
+                "and implement working code step-by-step, referencing Jira story keys in branches, commits, and PRs."
+            ),
+            backstory=(
+                "A senior software engineer who follows a clear plan. You keep the repo simple, readable, and runnable. "
+                "You create small, incremental commits aligned to Jira stories, open PRs, and merge when ready."
+            ),
+            tools=tools,
+            verbose=True,
+            allow_delegation=False
+        )
+
