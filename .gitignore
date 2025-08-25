@@ -14,7 +14,29 @@ wheels/
 
 # Credentials and sensitive files
 credentials/
-mcps/g_drive_mcp/credentials/
+mcps/google_drive_mcp/credentials/
+
+# MCP Server configurations and credentials
+# Google Drive
+*.oauth.keys.json
+*gdrive-server-credentials.json
+gcp-oauth.keys.json
+.gdrive-server-credentials.json
+
+# GitHub
+github-token.txt
+.github-credentials
+github_personal_access_token
+
+# Atlassian/Jira
+atlassian-config.json
+.atlassian-credentials
+jira-token.txt
+atlassian-oauth.json
+
+# Any other MCP server configs
+mcp-config.json
+mcp-credentials.json
 
 
 # Environment variables

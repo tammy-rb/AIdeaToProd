@@ -107,14 +107,14 @@ class PlanningStep(Step):
             
             print("Available tools:", {k: [t.name for t in v] for k, v in tools.items()})
             
-            # # Initialize and run the crew
-            # crew_initializer = CrewInitializer()
-            # crew = crew_initializer.initialize_crew(tools, app_config)
+            # Initialize and run the crew
+            crew_initializer = CrewInitializer()
+            crew = crew_initializer.initialize_crew(tools, app_config)
             
-            # print("Running the analysis and planning crew...")
-            # result = crew.kickoff()
+            print("Running the analysis and planning crew...")
+            result = crew.kickoff()
             
-            # return result
+            return result
 
 
 def main():
@@ -134,13 +134,13 @@ def main():
         result = planning_step.execute(input_data)
         print(f"Planning step result: {result}")
         
-        # Check result status
-        # if result["status"] == "success":
-        #     print("✅ Planning completed successfully!")
-        # elif result["status"] == "failed":
-        #     print(f"❌ Planning failed: {result.get('error', 'Unknown error')}")
-        # elif result["status"] == "interrupted":
-        #     print("⚠️ Planning was interrupted")
+        #Check result status
+        if result["status"] == "success":
+            print("✅ Planning completed successfully!")
+        elif result["status"] == "failed":
+            print(f"❌ Planning failed: {result.get('error', 'Unknown error')}")
+        elif result["status"] == "interrupted":
+            print("⚠️ Planning was interrupted")
             
     except Exception as e:
         print(f"Planning step failed: {str(e)}")
