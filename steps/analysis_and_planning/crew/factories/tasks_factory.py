@@ -67,14 +67,13 @@ class TasksFactory:
     {{
       "detailed_doc_id": "<google_drive_file_id>",
       "detailed_doc_name": "{app_name}_Detailed_Design.md",
-      "detailed_doc_content": "<VERBATIM_CONTENT_OF_DD_FILE>",
       "folder_id": "<pass_through_from_previous_task>"
     }}
 
     If any step fails, output STRICT JSON:
     {{"error":"<explanation>","partial":{{"detailed_doc_id":"?","folder_id":"<from_previous>"}}}}
     """,
-            expected_output="STRICT JSON with detailed_doc_id, detailed_doc_name, detailed_doc_content, folder_id (or error JSON).",
+            expected_output="STRICT JSON with detailed_doc_id, detailed_doc_name, folder_id (or error JSON).",
         )
 
     @staticmethod
@@ -82,11 +81,16 @@ class TasksFactory:
         return Task(
             agent=agent,
             description=f"""
-    From the Detailed Design content, derive a simple, complete repository structure. Do NOT write code. Return STRICT JSON ONLY.
+    From the Detailed Design document, derive a simple, complete repository structure. Do NOT write code. Return STRICT JSON ONLY.
 
     INPUTS:
     - app_name: "{app_name}"
-    - Use the previous task's JSON to get: detailed_doc_content (the full DD text) and folder_id.
+    - Use the previous task's JSON to get: detailed_doc_id and folder_id.
+
+    GOOGLE DRIVE OPERATIONS:
+    1) Read the Detailed Design document content from detailed_doc_id using Google Drive tools.
+    2) Analyze the DD content to understand the system architecture, components, and requirements.
+    3) Based on the DD content, derive the appropriate repository structure.
 
     THINKING AND OUTPUT RULES:
     - Prefer the simplest structure that fully supports the DD.
@@ -173,4 +177,3 @@ class TasksFactory:
             ),
         )
 
- 

@@ -1,0 +1,14 @@
+convert the response from the first step into a Pydantic BaseModel types.
+make a file that it will be saved there - so we will not need to run it multiple times.
+
+lots of money!
+so please run all of it just when i need.
+run the next steps independently. 
+enter the inputs manually.
+
+first step is complete, only need parsing.
+the final agent will store in a pre- made file the result fields we need
+
+next agent will use the content of the file.
+or we will parse it to the next agent.
+

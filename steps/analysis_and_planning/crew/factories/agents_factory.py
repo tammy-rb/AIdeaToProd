@@ -52,7 +52,7 @@ class AgentsFactory:
                 "A pragmatic architect who prefers simple, effective structures. You never miss essential components, "
                 "avoid over-engineering, and output strict JSON only."
             ),
-            tools=(tools or []),
+            tools=tools,
             verbose=True,
             allow_delegation=False
         )

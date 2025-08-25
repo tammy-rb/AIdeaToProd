@@ -35,7 +35,7 @@ class CrewInitializer:
         DD_only_task = TasksFactory.get_DD_only_task(DD_agent, app_name)
 
         # Code Structure agent (no external tools required)
-        CodeStructure_agent = AgentsFactory.get_CodeStructure_agent([])
+        CodeStructure_agent = AgentsFactory.get_CodeStructure_agent(google_drive_tools)
         CodeStructure_task = TasksFactory.get_CodeStructure_task(CodeStructure_agent, app_name)
 
         # Planning/Jira agent uses Atlassian tools
