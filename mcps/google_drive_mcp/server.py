@@ -45,7 +45,7 @@ from fastmcp import FastMCP
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-from mcps.google_drive_mcp.google_drive_client import GoogleDriveClient
+from google_drive_client import GoogleDriveClient
 from models import ListFilesArgs, ReadFileArgs, SearchFilesArgs, UploadFileArgs, CreateDirectoryArgs
 
 load_dotenv()

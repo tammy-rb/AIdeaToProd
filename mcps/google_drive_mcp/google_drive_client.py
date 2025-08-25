@@ -19,8 +19,8 @@ from googleapiclient.http import MediaInMemoryUpload
 
 
 # Configuration
-KEYFILE_PATH = os.path.join(os.getcwd(), "mcps", "g_drive_mcp", "credentials", "gcp-oauth.keys.json")
-GDRIVE_CREDENTIALS_PATH = os.path.join(os.getcwd(), "mcps", "g_drive_mcp", "credentials", ".gdrive-server-credentials.json")
+KEYFILE_PATH = os.path.join(os.getcwd(), "mcps", "google_drive_mcp", "credentials", "gcp-oauth.keys.json")
+GDRIVE_CREDENTIALS_PATH = os.path.join(os.getcwd(), "mcps", "google_drive_mcp", "credentials", ".gdrive-server-credentials.json")
 DRIVE_SCOPES = ["https://www.googleapis.com/auth/drive"]
 PORT = 8080
 
