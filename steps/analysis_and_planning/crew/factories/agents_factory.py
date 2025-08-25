@@ -74,22 +74,3 @@ class AgentsFactory:
             verbose=True,
             allow_delegation=False
         )
-
-    @staticmethod
-    def get_Implementation_agent(tools):
-        """Agent 5: Implements the repository and code in GitHub based on the plan and Jira keys."""
-        return Agent(
-            role="Repository Implementer & GitHub Builder",
-            goal=(
-                "Using the code structure and implementation plan, create a GitHub repository, scaffold all files, "
-                "and implement working code step-by-step, referencing Jira story keys in branches, commits, and PRs."
-            ),
-            backstory=(
-                "A senior software engineer who follows a clear plan. You keep the repo simple, readable, and runnable. "
-                "You create small, incremental commits aligned to Jira stories, open PRs, and merge when ready."
-            ),
-            tools=tools,
-            verbose=True,
-            allow_delegation=False
-        )
-

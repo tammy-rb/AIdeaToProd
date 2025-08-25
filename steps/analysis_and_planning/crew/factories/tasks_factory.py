@@ -67,13 +67,14 @@ class TasksFactory:
     {{
       "detailed_doc_id": "<google_drive_file_id>",
       "detailed_doc_name": "{app_name}_Detailed_Design.md",
-      "detailed_doc_content": "<VERBATIM_CONTENT_OF_DD_FILE>"
+      "detailed_doc_content": "<VERBATIM_CONTENT_OF_DD_FILE>",
+      "folder_id": "<pass_through_from_previous_task>"
     }}
 
     If any step fails, output STRICT JSON:
-    {{"error":"<explanation>","partial":{{"detailed_doc_id":"?"}}}}
+    {{"error":"<explanation>","partial":{{"detailed_doc_id":"?","folder_id":"<from_previous>"}}}}
     """,
-            expected_output="STRICT JSON with detailed_doc_id, detailed_doc_name, detailed_doc_content (or error JSON).",
+            expected_output="STRICT JSON with detailed_doc_id, detailed_doc_name, detailed_doc_content, folder_id (or error JSON).",
         )
 
     @staticmethod
@@ -85,7 +86,7 @@ class TasksFactory:
 
     INPUTS:
     - app_name: "{app_name}"
-    - Use the previous task's JSON to get: detailed_doc_content (the full DD text).
+    - Use the previous task's JSON to get: detailed_doc_content (the full DD text) and folder_id.
 
     THINKING AND OUTPUT RULES:
     - Prefer the simplest structure that fully supports the DD.
@@ -106,11 +107,12 @@ class TasksFactory:
       ],
       "assumptions": [
         "<concise assumption if you had to choose a language/framework/etc>"
-      ]
+      ],
+      "folder_id": "<pass_through_from_previous_task>"
     }}
 
     If any step fails, output STRICT JSON:
-    {{"error":"<explanation>","partial":{{"root":"{app_name}","files":[]}}}}
+    {{"error":"<explanation>","partial":{{"root":"{app_name}","files":[],"folder_id":"<from_previous>"}}}}
     """,
             expected_output="STRICT JSON with root, tree, files[], assumptions[] (or error JSON).",
         )
@@ -123,7 +125,7 @@ class TasksFactory:
     From a code structure JSON, produce an ordered implementation plan and create Jira Epics/Stories. Return STRICT JSON ONLY.
 
     INPUTS:
-    - Use the previous task's JSON to get: code structure (root, tree, files[], assumptions[]).
+    - Use the previous task's JSON to get: code structure (root, tree, files[], assumptions[]) and folder_id.
     - Jira project key to use : "{jira_project_key}"
 
     PLANNING (OUTPUT AS LIST ITEMS, NO CODE):
@@ -159,49 +161,16 @@ class TasksFactory:
     OUTPUT (STRICT JSON ONLY):
     {{
       "code_structure": {{"root":"<as_input>","tree":"<as_input>","files":[{{...}}],"assumptions":[...] }},
-      "implementation_plan": ["1. ...","2. ...","..."],
-      "epic_keys": ["<KEY-1>", "..."],
-      "story_keys": ["<KEY-2>", "..."]
+      "google_drive_folder_id": "<folder_id_from_previous_tasks>"
     }}
 
     If any step fails, output STRICT JSON:
-    {{"error":"<explanation>","partial":{{"implementation_plan":[],"created_keys":[]}}}}
+    {{"error":"<explanation>","partial":{{"code_structure":{{}},"google_drive_folder_id":"<from_previous>"}}}}
     """,
             expected_output=(
-                "STRICT JSON with code_structure echo, implementation_plan, epic_keys, story_keys "
+                "STRICT JSON with code_structure and google_drive_folder_id "
                 "or error JSON with partial info."
             ),
         )
 
-    @staticmethod
-    def get_Implementation_GitHub_task(agent, app_name: str, jira_project_key: str):
-        return Task(
-            agent=agent,
-            description=f"""
-Create a GitHub repository for the app using the provided code structure and the Jira issues in "{jira_project_key}".
-
-Do:
-- Create a repo named "{app_name}". If it already exists, use "{app_name} - {{timestamp}}".
-- Create folders/files exactly as in the given structure. Do not add tests or extra files.
-- Implement minimal, correct, runnable code aligned with the structure and Jira scope. No placeholders.
-- Commit and push to the default branch (main). Use small, logical commits as needed.
-
-Output (STRICT JSON only):
-{{
-  "repo_name": "<name>",
-  "repo_url": "<url>",
-  "default_branch": "main",
-  "created_branches": ["..."],
-  "created_files": ["..."],
-  "pull_requests": ["..."],
-  "commit_map": {{}}
-}}
-
-On failure, return STRICT JSON:
-{{"error":"<explanation>","partial":{{"repo_name":"?","created_files":[]}}}}
-""",
-            expected_output=(
-                "STRICT JSON with repo_name, repo_url, default_branch, created_branches, created_files, "
-                "pull_requests, commit_map or error JSON with partial info."
-            ),
-        )
+ 
