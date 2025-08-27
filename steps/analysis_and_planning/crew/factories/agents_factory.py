@@ -11,30 +11,32 @@ class AgentsFactory:
         pass
 
     @staticmethod
-    def get_HLD_agent(google_drive_tools):
+    def get_HLD_agent(tools):
         return Agent(
             role="High-Level Design Architect",
-            goal="Turn an app idea into an excellent, structured HLD and store it in Drive.",
+            goal="Turn an app idea into an excellent, structured HLD and store it in Drive and locally.",
             backstory=(
                 "A seasoned software architect. You produce unambiguous HLDs with crisp structure. "
-                "You are meticulous about naming, idempotency, and strict JSON outputs."
+                "You are meticulous about naming, idempotency, and strict JSON outputs. "
+                "You also save important documents locally for workflow persistence."
             ),
-            tools=google_drive_tools,
+            tools=tools,
             verbose=True,
             allow_delegation=False
         )
 
     @staticmethod
-    def get_DD_agent(gdrive_tools):
+    def get_DD_agent(tools):
         """Agent 2: Creates Detailed Design (DD) from High-Level Design (HLD)."""
         return Agent(
             role="Detailed Design Specialist",
-            goal=("Read the HLD, author a precise Detailed Design in the same Drive folder."),
+            goal=("Read the HLD, author a precise Detailed Design in the same Drive folder and save locally."),
             backstory=(
                 "A senior technical lead. You translate HLDs into detailed design documents. "
-                "You use strict JSON outputs and verify every created artifact."
+                "You use strict JSON outputs and verify every created artifact. "
+                "You also save important documents locally for workflow persistence."
             ),
-            tools=gdrive_tools,
+            tools=tools,
             verbose=True,
             allow_delegation=False
         )
@@ -46,11 +48,11 @@ class AgentsFactory:
             role="Code Structure Architect",
             goal=(
                 "Translate the Detailed Design into a simple, pragmatic repository/file structure with minimal complexity, "
-                "without writing code. For each file, define a clear purpose."
+                "without writing code. For each file, define a clear purpose. Save the structure locally."
             ),
             backstory=(
                 "A pragmatic architect who prefers simple, effective structures. You never miss essential components, "
-                "avoid over-engineering, and output strict JSON only."
+                "avoid over-engineering, and output strict JSON only. You save your work locally for next steps to use."
             ),
             tools=tools,
             verbose=True,
@@ -58,7 +60,7 @@ class AgentsFactory:
         )
 
     @staticmethod
-    def get_Planning_agent(atlassian_tools):
+    def get_Planning_agent(tools):
         """Agent 4: Plans delivery steps and creates Jira artifacts from the code structure."""
         return Agent(
             role="Delivery Planner & Jira Project Organizer",
@@ -70,7 +72,7 @@ class AgentsFactory:
                 "An experienced delivery manager and technical PM who sequences work logically. "
                 "You create clean Jira backlogs aligned to a simple code structure."
             ),
-            tools=atlassian_tools,
+            tools=tools,
             verbose=True,
             allow_delegation=False
         )

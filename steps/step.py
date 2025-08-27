@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
+from models import AppConfig
 
 
 class Step(ABC):
@@ -21,12 +22,12 @@ class Step(ABC):
         self._result: Optional[Any] = None
     
     @abstractmethod
-    def execute(self, input_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def execute(self, app_config: AppConfig) -> Dict[str, Any]:
         """
-        Execute the step with the given input data.
+        Execute the step with the given app configuration.
         
         Args:
-            input_data: Optional input data from previous steps
+            app_config: AppConfig object containing application configuration
             
         Returns:
             Dict containing the result of the step execution

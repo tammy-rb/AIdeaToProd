@@ -9,7 +9,7 @@ from crewai_tools import MCPServerAdapter
 from steps.step import Step
 from steps.analysis_and_planning.crew.crew_initializer import CrewInitializer
 from steps.analysis_and_planning.config import MCPServersConfig
-from steps.analysis_and_planning.models import AppConfig
+from models import AppConfig
 
 
 class PlanningStep(Step):
@@ -29,32 +29,29 @@ class PlanningStep(Step):
             description="Creates HLD, DD, code structure, and Jira tasks using AI agents"
         )
     
-    def execute(self, input_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def execute(self, app_config: AppConfig) -> Dict[str, Any]:
         """
         Execute the planning step by running the analysis and planning crew.
         
         Args:
-            input_data: Required input containing idea, app_name, and jira_project_key
+            app_config: AppConfig object containing idea, app_name, and jira_project_key
             
         Returns:
             Dictionary containing the crew execution result
             
         Raises:
-            ValueError: If input data is invalid or missing
+            ValueError: If app_config is invalid
             Exception: If the crew execution fails
         """
         print(f"Starting {self.name} step...")
-      
-        # Parse input with Pydantic for type safety
-        try:
-            app_config = AppConfig(**input_data)
-        except Exception as e:
-            print(f"Error: Invalid input data - {e}")
+        
+        if not app_config:
+            print("Error: app_config is required")
             return {
                 "status": "failed",
                 "result": None,
-                "config": input_data,
-                "error": str(e)
+                "config": None,
+                "error": "app_config parameter is required"
             }
         
         try:
@@ -123,15 +120,15 @@ def main():
     """
     planning_step = PlanningStep()
     
-    # Example input data - in real use this would come from the host agent
-    input_data = {
-        "idea": "an application that the user enter a city, and it provides 10 jokes about that city",
-        "app_name": "CityJokes",
-        "jira_project_key": "CIT"
-    }
+    # Create AppConfig object - in real use this would come from the host agent
+    app_config = AppConfig(
+        idea="an application that the user enter a word, and it returns the number of letters in that word",
+        app_name="WordLengthChecker",
+        jira_project_key="WOR"
+    )
     
     try:
-        result = planning_step.execute(input_data)
+        result = planning_step.execute(app_config)
         print(f"Planning step result: {result}")
         
         #Check result status

@@ -11,3 +11,4 @@ class AppConfig(BaseModel):
     idea: str = Field(..., description="The application idea description")
     app_name: str = Field(..., description="The name of the application")
     jira_project_key: str = Field(..., description="The Jira project key for task creation")
+

@@ -1,0 +1,14 @@
+{
+  "modules": [
+    "main.py",
+    "utils.py"
+  ],
+  "classes": [
+    "App",
+    "Helper"
+  ],
+  "functions": [
+    "main",
+    "process_data"
+  ]
+}
