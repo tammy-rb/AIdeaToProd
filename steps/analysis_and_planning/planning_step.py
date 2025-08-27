@@ -94,24 +94,24 @@ class PlanningStep(Step):
         
         # Use nested context managers to ensure proper cleanup
         with MCPServerAdapter(server_params["google_drive"]) as google_drive_tools, \
-             MCPServerAdapter(server_params["atlassian"]) as atlassian_tools:
-            
-            # Build a map of tools by capability/source
-            tools = {
-                "google_drive": list(google_drive_tools),
-                "atlassian": list(atlassian_tools),
-            }
-            
-            print("Available tools:", {k: [t.name for t in v] for k, v in tools.items()})
-            
-            # Initialize and run the crew
-            crew_initializer = CrewInitializer()
-            crew = crew_initializer.initialize_crew(tools, app_config)
-            
-            print("Running the analysis and planning crew...")
-            result = crew.kickoff()
-            
-            return result
+            MCPServerAdapter(server_params["atlassian"]) as atlassian_tools:
+                
+                # Build a map of tools by capability/source
+                tools = {
+                    "google_drive": list(google_drive_tools),
+                    "atlassian": list(atlassian_tools),
+                }
+                
+                print("Available tools:", {k: [t.name for t in v] for k, v in tools.items()})
+                
+                # Initialize and run the crew
+                crew_initializer = CrewInitializer()
+                crew = crew_initializer.initialize_crew(tools, app_config)
+                
+                print("Running the analysis and planning crew...")
+                result = crew.kickoff()
+                
+                return result
 
 
 def main():

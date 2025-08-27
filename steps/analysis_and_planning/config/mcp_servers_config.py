@@ -10,10 +10,6 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Constants
-ATLASSIAN_SSE = "https://mcp.atlassian.com/v1/sse"
-
-
 class MCPServersConfig:
     """Configuration provider for MCP server parameters used in analysis and planning."""
     
@@ -42,7 +38,7 @@ class MCPServersConfig:
         """
         return StdioServerParameters(
             command="npx",
-            args=["-y", "mcp-remote", ATLASSIAN_SSE],
+            args=["-y", "mcp-remote@latest", "https://mcp.atlassian.com/v1/sse"]
         )
     
     @staticmethod
