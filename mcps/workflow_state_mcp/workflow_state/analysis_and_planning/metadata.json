@@ -1,0 +1,33 @@
+{
+  "status": "success",
+  "app_name": "WordLengthChecker",
+  "jira_project_key": "WOR",
+  "hld": {
+    "folder_id": "1lYeTBibZm7hPZQ0buC51ITWB45sm6jb3",
+    "folder_name": "WordLengthChecker",
+    "hl_doc_id": "11DKp_tSwffoI24_smzYQA9JWQjCr3UAp",
+    "hl_doc_name": "WordLengthChecker_HLD.md",
+    "local_saved": true
+  },
+  "dd": {
+    "detailed_doc_id": "1kDUvumQ81WCTjB0Fqwou7oGz9cEwRvlL",
+    "detailed_doc_name": "WordLengthChecker_Detailed_Design.md",
+    "folder_id": "1lYeTBibZm7hPZQ0buC51ITWB45sm6jb3",
+    "local_saved": true
+  },
+  "code_structure": {
+    "error": "Validation error while saving the code structure: required field 'local_saved' is missing.",
+    "partial": {
+      "root": "WordLengthChecker",
+      "files": [],
+      "local_saved": false
+    }
+  },
+  "planning": {
+    "implementation_plan": [],
+    "jira_project_key": "WOR",
+    "epics_created_count": 0,
+    "stories_created_count": 0,
+    "local_saved": false
+  }
+}

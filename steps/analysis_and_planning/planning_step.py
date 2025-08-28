@@ -11,6 +11,8 @@ from steps.analysis_and_planning.crew.crew_initializer import CrewInitializer
 from steps.analysis_and_planning.config import MCPServersConfig
 from models import AppConfig
 
+from steps.analysis_and_planning.planning_metadata_saver import PlanningMetadataSaver
+
 
 class PlanningStep(Step):
     """
@@ -94,12 +96,13 @@ class PlanningStep(Step):
         
         # Use nested context managers to ensure proper cleanup
         with MCPServerAdapter(server_params["google_drive"]) as google_drive_tools, \
-            MCPServerAdapter(server_params["atlassian"]) as atlassian_tools:
-                
+            MCPServerAdapter(server_params["atlassian"]) as atlassian_tools, \
+            MCPServerAdapter(server_params["workflow_state"]) as workflow_state_tools:
                 # Build a map of tools by capability/source
                 tools = {
                     "google_drive": list(google_drive_tools),
                     "atlassian": list(atlassian_tools),
+                    "workflow_state": list(workflow_state_tools),
                 }
                 
                 print("Available tools:", {k: [t.name for t in v] for k, v in tools.items()})
@@ -134,6 +137,10 @@ def main():
         #Check result status
         if result["status"] == "success":
             print("✅ Planning completed successfully!")
+            # Save metadata after successful planning
+            metadata_path = "mcps/workflow_state_mcp/workflow_state/analysis_and_planning/metadata.json"
+            saver = PlanningMetadataSaver(metadata_path)
+            saver.save(result)
         elif result["status"] == "failed":
             print(f"❌ Planning failed: {result.get('error', 'Unknown error')}")
         elif result["status"] == "interrupted":
