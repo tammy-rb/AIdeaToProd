@@ -68,9 +68,7 @@ class PlanningStep(Step):
             return {
                 "status": "success",
                 "result": result,
-                "config": app_config.model_dump() if hasattr(app_config, "model_dump") else (
-                    app_config.dict() if hasattr(app_config, "dict") else dict(app_config)
-                ),
+                "config": app_config.model_dump(),
             }
             
         except KeyboardInterrupt:
@@ -78,7 +76,7 @@ class PlanningStep(Step):
             return {
                 "status": "interrupted",
                 "result": None,
-                "config": app_config.dict()
+                "config": app_config.model_dump()
             }
         except Exception as e:
             print(f"Error in {self.name} step: {str(e)}")
@@ -120,9 +118,9 @@ class PlanningStep(Step):
 def main():
     # Example app configuration
     app_config = AppConfig(
-        idea="A task management app that integrates with Google Drive and Jira.",
-        app_name="TaskMaster",
-        jira_project_key="TM"
+        idea="an application that the user enter a word, and it returns the number of letters in that word",
+        app_name="WordLengthChecker",
+        jira_project_key="WOR"
     )
     
     planning_step = PlanningStep()
