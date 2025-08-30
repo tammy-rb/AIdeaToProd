@@ -14,11 +14,10 @@ class AgentsFactory:
     def get_HLD_agent(tools):
         return Agent(
             role="High-Level Design Architect",
-            goal="Turn an app idea into an excellent, structured HLD and store it in Drive and locally.",
+            goal="Turn an app idea into an excellent, structured HLD and store it in Drive.",
             backstory=(
                 "A seasoned software architect. You produce unambiguous HLDs with crisp structure. "
-                "You are meticulous about naming, idempotency, and strict JSON outputs. "
-                "You also save important documents locally for workflow persistence."
+                "You are meticulous about naming, idempotency, and strict JSON outputs."
             ),
             tools=tools,
             verbose=True,
@@ -30,11 +29,10 @@ class AgentsFactory:
         """Agent 2: Creates Detailed Design (DD) from High-Level Design (HLD)."""
         return Agent(
             role="Detailed Design Specialist",
-            goal=("Read the HLD, author a precise Detailed Design in the same Drive folder and save locally."),
+            goal=("Read the HLD, author a precise Detailed Design in the same Drive folder."),
             backstory=(
                 "A senior technical lead. You translate HLDs into detailed design documents. "
-                "You use strict JSON outputs and verify every created artifact. "
-                "You also save important documents locally for workflow persistence."
+                "You use strict JSON outputs and verify every created artifact."
             ),
             tools=tools,
             verbose=True,
@@ -48,11 +46,11 @@ class AgentsFactory:
             role="Code Structure Architect",
             goal=(
                 "Translate the Detailed Design into a simple, pragmatic repository/file structure with minimal complexity, "
-                "without writing code. For each file, define a clear purpose. Save the structure locally."
+                "without writing code. For each file, define a clear purpose."
             ),
             backstory=(
                 "A pragmatic architect who prefers simple, effective structures. You never miss essential components, "
-                "avoid over-engineering, and output strict JSON only. You save your work locally for next steps to use."
+                "avoid over-engineering, and output strict JSON only."
             ),
             tools=tools,
             verbose=True,

@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 class PlanningMetadataSaver:
@@ -30,10 +31,11 @@ class PlanningMetadataSaver:
         cs = self._extract_by_agent(tasks_output, ["code structure", "architect", "structure"])
         jira = self._extract_by_agent(tasks_output, ["jira", "delivery planner", "project organizer", "epic", "story"])
         
-        # 4) Build compact metadata
+        # 4) Build compact metadata with timestamp
         metadata: Dict[str, Any] = {
             "status": status,
             "app_name": app_name,
+            "last_updated": datetime.now().isoformat(),  # Add timestamp here
         }
         
         if hld:
@@ -103,6 +105,7 @@ class PlanningMetadataSaver:
             json.dump(metadata, f, indent=2, ensure_ascii=False)
         
         print(f"✅ Metadata saved to {self.file_path}")
+        print(f"📅 Last updated: {metadata['last_updated']}")
     
     # -----------------------
     # Helpers

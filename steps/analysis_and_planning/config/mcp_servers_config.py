@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class MCPServersConfig:
-    """Configuration provider for MCP server parameters used in analysis and planning."""
     
     @staticmethod
     def get_google_drive_params() -> StdioServerParameters:
@@ -51,5 +50,5 @@ class MCPServersConfig:
         """
         return {
             "google_drive": MCPServersConfig.get_google_drive_params(),
-            "atlassian": MCPServersConfig.get_atlassian_params(),
+            "atlassian": MCPServersConfig.get_atlassian_params()
         }
