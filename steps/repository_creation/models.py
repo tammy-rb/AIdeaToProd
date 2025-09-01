@@ -1,5 +1,23 @@
 from pydantic import BaseModel, Field
 from typing import Literal, Optional, List, Dict
+from enum import Enum
+from typing import Dict, Optional
+from pydantic import BaseModel, Field
+
+class ErrorCategory(str, Enum):
+    CONFIG = "config"
+    IO = "io"
+    JSON = "json"
+    VALIDATION = "validation"
+    TOOL = "tool"
+    UNKNOWN = "unknown"
+
+class BuildError(BaseModel):
+    origin: str                          # which node/stage raised it, e.g., "LoadBundle"
+    category: ErrorCategory
+    message: str
+    retryable: bool = False
+    context: Dict = Field(default_factory=dict)  # optional params (e.g., path)
 
 class FileSpec(BaseModel):
     """Planned file in the repo, with path, purpose, and optional spec."""
@@ -13,13 +31,6 @@ class WorkItem(BaseModel):
     path: str
     purpose: str
     spec: Optional[str] = None
-
-class ToolError(BaseModel):
-    """Structured error from a tool/MCP call."""
-    tool: str
-    params: Dict
-    message: str
-    retryable: bool = False
 
 class RepoRef(BaseModel):
     """GitHub repo reference and status."""
@@ -50,5 +61,5 @@ class BuildState(BaseModel):
     assumptions: List[str] = []            # logged guesses when design info is missing
     essential_missing: List[WorkItem] = [] # critical files detected later (e.g. __init__.py)
     last_commit_sha: Optional[str] = None  # SHA of most recent commit
-    errors: List[ToolError] = []           # structured errors captured from tool/MCP calls
+    errors: List[BuildError] = []           # structured errors captured from tool/MCP calls
     report: Dict = {}                      # final build summary after Finalize
